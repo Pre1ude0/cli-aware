@@ -5,7 +5,8 @@
 	"main": "index.js",
 	"scripts": {
 		"check": "prettier --check .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"test": "vitest run"
 	},
 	"repository": {
 		"type": "git",
@@ -22,6 +23,10 @@
 	"devDependencies": {
 		"@types/node": "^26.1.1",
 		"prettier": "3.9.5",
-		"typescript": "^7.0.2"
+		"typescript": "^7.0.2",
+		"vitest": "^4.1.10"
+	},
+	"dependencies": {
+		"regex": "^6.1.0"
 	}
 }
