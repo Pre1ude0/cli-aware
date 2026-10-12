@@ -1,21 +1,47 @@
 {
 	"name": "cli-aware",
-	"version": "0.0.2",
-	"description": "",
-	"main": "index.js",
+	"version": "0.1.0",
+	"description": "Best-effort detection of whether an HTTP request originated from a CLI tool or a browser",
+	"type": "module",
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"sideEffects": false,
+	"files": [
+		"dist"
+	],
+	"engines": {
+		"node": ">=18.0.0"
+	},
 	"scripts": {
+		"build": "node scripts/build.js",
+		"typecheck": "tsc --noEmit",
 		"check": "prettier --check .",
 		"format": "prettier --write .",
-		"test": "vitest run"
+		"test": "vitest run",
+		"prepublishOnly": "npm run build && npm test"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/Pre1ude0/cli-aware.git"
 	},
-	"keywords": [],
+	"keywords": [
+		"cli",
+		"browser",
+		"user-agent",
+		"detection",
+		"curl",
+		"http"
+	],
 	"author": "",
 	"license": "ISC",
-	"type": "module",
 	"bugs": {
 		"url": "https://github.com/Pre1ude0/cli-aware/issues"
 	},
@@ -25,8 +51,5 @@
 		"prettier": "3.9.5",
 		"typescript": "^7.0.2",
 		"vitest": "^4.1.10"
-	},
-	"dependencies": {
-		"regex": "^6.1.0"
 	}
 }
