@@ -11,7 +11,7 @@ import {
 export type RequestInput = Request | { headers?: RequestHeaders };
 
 /**
- * Detects whether a request comes from a cli client (curl, wget, ...), a browser, or something else
+ * Detects whether a request comes from a cli client (curl, wget, ...), a browser, or something else.
  *
  * @example
  * const aware = new CliAware(request);
@@ -29,9 +29,8 @@ export default class CliAware<R extends RequestInput, O extends DetectionOptions
 	readonly unknown: boolean;
 	readonly client: string | null;
 
-    constructor(request: R, options: O = {} as O) {
-        if (request == null) throw new TypeError("CliAware: 'request' argument is required.");
-
+	constructor(request: R, options: O = {} as O) {
+		if (request == null) throw new TypeError("CliAware: 'request' argument is required.");
 
 		this.request = request;
 		this.options = options;
@@ -49,6 +48,13 @@ export default class CliAware<R extends RequestInput, O extends DetectionOptions
 	}
 }
 
+
+/**
+ * Alternative (and possibly cleaner) method for just cli detection.
+ *
+ * @example
+ * if (isCliRequest(request)) { ... }
+ */
 export function isCliRequest(request: RequestInput, options?: DetectionOptions): boolean {
 	return new CliAware(request, options).cli;
 }

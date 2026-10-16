@@ -52,14 +52,18 @@ export const DEFAULT_CLI_CLIENTS: readonly string[] = Object.freeze([
 ]);
 
 function escapeRegex(str: string): string {
+	// Escape special regex characters in the string
 	return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function buildCliRegex(clients: readonly string[]): RegExp {
 	// Sort by length descending so longer tokens match first
-	const sorted = [...clients].sort((a, b) => b.length - a.length);
-	const escaped = sorted.map(escapeRegex);
-	return new RegExp(`(?:^|[^a-zA-Z0-9_-])(${escaped.join('|')})(?=[/_\\s\\d.:;()-]|$)`, 'i');
+	const alternation = [...clients]
+		.sort((a, b) => b.length - a.length)
+		.map(escapeRegex)
+		.join('|');
+
+	return new RegExp(`(?:^|[^a-zA-Z0-9_-])(${alternation})(?=[/_\\s\\d.:;()-]|$)`, 'i');
 }
 
 const DEFAULT_CLI_REGEX = buildCliRegex(DEFAULT_CLI_CLIENTS);
@@ -68,8 +72,26 @@ const DEFAULT_CLI_REGEX = buildCliRegex(DEFAULT_CLI_CLIENTS);
  * Positive browser detection regex.
  * Browsers usually identify with Mozilla/5.0 (or Mozilla/x.x) and an engine/product token.
  */
-const BROWSER_UA_REGEX =
-	/Mozilla\/\d+\.\d+.*(?:Chrome\/|CriOS\/|Chromium\/|Firefox\/|FxiOS\/|Edg\/|Edge\/|OPR\/|Opera\/|(?:Version\/[\d.]+\s+)?(?:Mobile\/\w+\s+)?Safari\/)/i;
+const BROWSER_TOKENS = [
+	'Chrom(?:e|ium)',
+	'CriOS',
+	'Firefox',
+	'FxiOS',
+	'Edge?',
+	'OPR',
+	'Opera',
+	'Safari'
+];
+
+const BROWSER_UA_REGEX = new RegExp(
+	String.raw`Mozilla/\d+\.\d+.*(?:${BROWSER_TOKENS.join('|')})/`,
+	'i'
+);
+
+function headerToString(value: unknown): string | null {
+	if (Array.isArray(value)) return value.join(', ');
+	return typeof value === 'string' ? value : null;
+}
 
 /**
  * Extracts a header value case-insensitively from either Fetch API Headers or a plain object.
@@ -78,37 +100,22 @@ export function getHeaderValue(
 	headers: RequestHeaders | null | undefined,
 	name: string
 ): string | null {
-	if (!headers || typeof headers !== 'object') {
-		return null;
-	}
+	if (!headers || typeof headers !== 'object') return null;
 
 	if (typeof (headers as Headers).get === 'function') {
 		return (headers as Headers).get(name);
 	}
 
+	const record = headers as Record<string, unknown>;
 	const target = name.toLowerCase();
-	const headerRecord = headers as Record<string, string | string[] | undefined>;
 
-	// Fast path: direct property lookup (e.g. Node IncomingMessage lowercases headers)
-	const directVal = headerRecord[target] ?? headerRecord[name];
-	if (directVal !== undefined) {
-		if (Array.isArray(directVal)) {
-			return directVal.join(', ');
-		}
-		return typeof directVal === 'string' ? directVal : null;
-	}
+	// Fast path: Node lowercases incoming header names
+	const direct = record[target] ?? record[name];
+	if (direct !== undefined) return headerToString(direct);
 
-	// Fallback scan across keys
-	for (const [key, val] of Object.entries(headers)) {
-		if (key.toLowerCase() === target) {
-			if (Array.isArray(val)) {
-				return val.join(', ');
-			}
-			return typeof val === 'string' ? val : null;
-		}
-	}
-
-	return null;
+	// Fallback: case-insensitive scan
+	const key = Object.keys(record).find((k) => k.toLowerCase() === target);
+	return key === undefined ? null : headerToString(record[key]);
 }
 
 function isBrowser(userAgent: string, headers?: RequestHeaders | null): boolean {
