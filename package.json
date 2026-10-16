@@ -1,6 +1,6 @@
 {
 	"name": "cli-aware",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"description": "Best-effort detection of whether an HTTP request originated from a CLI tool or a browser",
 	"type": "module",
 	"main": "./dist/index.cjs",
