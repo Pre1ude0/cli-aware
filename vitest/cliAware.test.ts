@@ -43,16 +43,14 @@ describe('CliAware class constructor and call forms', () => {
 			headers: { 'user-agent': 'curl/8.0' }
 		});
 
-        const result = new CliAware(
-            req,
-            {
-                cli: false,
-                client: 'malicious',
-                browser: true,
-                __proto__: { polluted: true },
-                constructor: 'bad-constructor',
-                prototype: 'bad-prototype'
-            } as any);
+		const result = new CliAware(req, {
+			cli: false,
+			client: 'malicious',
+			browser: true,
+			__proto__: { polluted: true },
+			constructor: 'bad-constructor',
+			prototype: 'bad-prototype'
+		} as any);
 
 		expect(result.cli).toBe(true);
 		expect(result.browser).toBe(false);
@@ -172,11 +170,11 @@ describe('Input shapes and header extraction', () => {
 		];
 
 		for (const input of emptyInputs) {
-            try {
-                new CliAware(input as any);
-            } catch (e) {
-                expect(e).toBeInstanceOf(TypeError);
-            }
+			try {
+				new CliAware(input as any);
+			} catch (e) {
+				expect(e).toBeInstanceOf(TypeError);
+			}
 		}
 	});
 });
@@ -192,7 +190,8 @@ describe('Real-world User-Agent test suite', () => {
 	});
 
 	it('detects desktop Firefox', () => {
-		const ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0';
+		const ua =
+			'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/119.0';
 		const res = new CliAware({ headers: { 'user-agent': ua } });
 		expect(res.browser).toBe(true);
 		expect(res.cli).toBe(false);
@@ -358,7 +357,9 @@ describe('Real-world User-Agent test suite', () => {
 	it('detects Java and reqwest', () => {
 		expect(new CliAware({ headers: { 'user-agent': 'Java/17.0.9' } }).client).toBe('java');
 		expect(new CliAware({ headers: { 'user-agent': 'Java/1.8.0_381' } }).client).toBe('java');
-		expect(new CliAware({ headers: { 'user-agent': 'reqwest/0.11.24' } }).client).toBe('reqwest');
+		expect(new CliAware({ headers: { 'user-agent': 'reqwest/0.11.24' } }).client).toBe(
+			'reqwest'
+		);
 	});
 });
 
