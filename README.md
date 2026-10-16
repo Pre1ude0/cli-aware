@@ -24,17 +24,17 @@ import CliAware from 'cli-aware';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = ({ request }) => {
-	const aware = new CliAware(request);
+    const aware = new CliAware(request);
 
-	if (aware.cli) {
-		return new Response('Hello CLI user!');
-	}
+    if (aware.cli) {
+        return new Response('Hello CLI user!');
+    }
 
-	if (aware.browser) {
-		return new Response('Hello browser user!');
-	}
+    if (aware.browser) {
+        return new Response('Hello browser user!');
+    }
 
-	return new Response('Hello mysterious (perhaps spoofed?) user!');
+    return new Response('Hello mysterious (perhaps spoofed?) user!');
 };
 ```
 
