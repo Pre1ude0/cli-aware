@@ -174,7 +174,8 @@ export function detectClient(
 	const cliMatch = sanitizedUa.match(clientRegex);
 	if (cliMatch && cliMatch[1]) {
 		const matchedRaw = cliMatch[1].toLowerCase();
-		const matchedToken = activeClients.find((c) => c.toLowerCase() === matchedRaw) ?? matchedRaw;
+		const matchedToken =
+			activeClients.find((c) => c.toLowerCase() === matchedRaw) ?? matchedRaw;
 		return { type: 'cli', client: matchedToken };
 	}
 

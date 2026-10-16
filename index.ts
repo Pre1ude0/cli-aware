@@ -48,7 +48,6 @@ export default class CliAware<R extends RequestInput, O extends DetectionOptions
 	}
 }
 
-
 /**
  * Alternative (and possibly cleaner) method for just cli detection.
  *
